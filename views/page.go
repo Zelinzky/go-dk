@@ -59,5 +59,6 @@ func Container(padY bool, children ...g.Node) g.Node {
 }
 
 func Prose(children ...g.Node) g.Node {
-	return Div(Class("prose lg:prose-lg xl:prose-xl prose-indigo"), g.Group(children))
+	return Div(Class("prose lg:prose-lg xl:prose-xl prose-indigo"),
+		g.Group(children))
 }

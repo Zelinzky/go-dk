@@ -269,3 +269,4 @@ go.work
 # .idea/modules
 # *.iml
 # *.ipr
+github.com/maragudk/env
