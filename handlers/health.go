@@ -17,6 +17,5 @@ func Health(mux chi.Router, p pinger) {
 			http.Error(w, err.Error(), http.StatusBadGateway)
 			return
 		}
-		// TODO implement
 	})
 }

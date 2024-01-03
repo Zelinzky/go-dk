@@ -14,7 +14,11 @@ type signupper interface {
 	SignupForNewsletter(ctx context.Context, email model.Email) (string, error)
 }
 
-func NewsletterSignup(mux chi.Router, s signupper) {
+type sender interface {
+	Send(ctx context.Context, m model.Message) error
+}
+
+func NewsletterSignup(mux chi.Router, s signupper, q sender) {
 	mux.Post("/newsletter/signup", func(w http.ResponseWriter, r *http.Request) {
 		email := model.Email(r.FormValue("email"))
 
@@ -22,8 +26,19 @@ func NewsletterSignup(mux chi.Router, s signupper) {
 			http.Error(w, "email is inbalid", http.StatusBadRequest)
 			return
 		}
+		token, err := s.SignupForNewsletter(r.Context(), email)
+		if err != nil {
+			http.Error(w, "error signing up, refresh to try again", http.StatusBadGateway)
+			return
+		}
 
-		if _, err := s.SignupForNewsletter(r.Context(), email); err != nil {
+		err = q.Send(r.Context(), model.Message{
+			"job":   "confirmation_email",
+			"email": email.String(),
+			"token": token,
+		})
+
+		if err != nil {
 			http.Error(w, "error signing up, refresh to try again", http.StatusBadGateway)
 			return
 		}
